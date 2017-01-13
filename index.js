@@ -2,6 +2,8 @@ window.AFRAME = require('aframe');
 
 AFRAME.registerComponent('button', require('./button'));
 
+AFRAME.registerComponent('toggle', require('./toggle'));
+
 AFRAME.registerComponent('slider', require('./slider'));
 
 AFRAME.registerComponent('dial', require('./dial'));
