@@ -1,74 +1,80 @@
 module.exports = {
-  schema: {},
+  schema: {
+    color: { type: 'color', default: '#ffff00' },
+    pressedColor: { type: 'color', default: '#FC4007' },
+    size: { type: 'number', default: 0.1 },
+    topY: { type: 'number', default: 0.02 },
+    topDepressY: { type: 'number', default: 0.01 }
+  },
 
   multiple: true,
 
   init: function () {
-    var top = new THREE.Mesh(new THREE.CylinderGeometry( 0.1, 0.1, 0.02, 10 ), new THREE.MeshLambertMaterial({color: 0xffff00}));
+    var topMaterial = new THREE.MeshLambertMaterial({color: this.data.color });
+    var top = new THREE.Mesh(new THREE.CylinderGeometry( 0.1, 0.1, 0.02, 10 ), topMaterial);
+    var bodyMaterial = new THREE.MeshNormalMaterial();
+    var body = new THREE.Mesh(new THREE.CylinderGeometry( 0.12, 0.15, 0.02, 10 ), bodyMaterial);
+
+    top.position.y = this.data.topY;
     this.top = top;
-    var chassis = new THREE.Mesh(new THREE.CylinderGeometry( 0.12, 0.15, 0.02, 10 ), new THREE.MeshNormalMaterial());
+    body.add(top);
+    this.el.setObject3D('mesh', body);
 
-    top.position.y = 0.02;
+    var controllers = document.querySelectorAll('a-entity[hand-controls]');
+    this.controllers = Array.prototype.slice.call(controllers);
 
-    chassis.add(top);
-
-    this.el.setObject3D('mesh', chassis);
-
-    this.controllers = Array.prototype.slice.call(document.querySelectorAll('a-entity[hand-controls]'));
+    this.pressed = false;
+    this.interval = null;
+    this.lastTime = 0;
   },
 
-
-
   play: function () {
-
-    this.el.addEventListener('hit', this.onHit);
-
-    this.el.addEventListener('mousedown', this.onButtonDown.bind(this));
-
-    this.el.addEventListener('mouseup', this.onButtonUp.bind(this));
-
-    this.el.addEventListener('buttondown', this.onButtonDown.bind(this));
-
-    this.el.addEventListener('buttonup', this.onButtonUp.bind(this));
+    var el = this.el;
+    // cursor controls
+    el.addEventListener('mousedown', this.onButtonDown.bind(this));
+    el.addEventListener('mouseup', this.onButtonUp.bind(this));
+    el.addEventListener('mouseleave', this.onButtonUp.bind(this));
+    // motion controls
+    el.addEventListener('hit', this.onHit);
+    el.addEventListener('touchdown', this.onButtonDown.bind(this));
+    el.addEventListener('touchup', this.onButtonUp.bind(this));
   },
 
   onButtonDown: function() {
-    this.top.position.y = 0.01;
-    this.top.material.color.set(0xff0000);
+    var top = this.top;
+    var el = this.el;
+    top.position.y = this.data.topY - this.data.topDepressY;
+    top.material.color.set(this.data.pressedColor);
+    el.emit('buttondown');
   },
 
   onButtonUp: function() {
-    this.top.position.y = 0.015;
-    this.top.material.color.set(0xffff00);
+    var top = this.top;
+    var el = this.el;
+    top.position.y = this.data.topY;
+    top.material.color.set(this.data.color);
+    el.emit('buttonup');
+    el.emit('pressed');
   },
 
+  // handles hand controller collisions
   onHit: function (evt) {
-    var pressed = false;
-
-    var interval;
     var threshold = 30;
-    var lastTime = 0;
-
-    var self = this;
-
-    if (!pressed) {
-      pressed = true;
-
-      self.emit('buttondown');
-
-      interval = setInterval(function() {
-        var delta = performance.now() - lastTime;
+    if (!this.pressed) {
+      this.pressed = true;
+      this.emit('touchdown');
+      var self = this;
+      this.interval = setInterval(function() {
+        var delta = performance.now() - self.lastTime;
         if (delta > threshold) {
-          pressed = false;
-          lastTime = null;
-          clearInterval(interval);
-          self.emit('buttonup');
-          self.emit('buttonpressed');
+          self.pressed = false;
+          self.lastTime = 0;
+          self.emit('touchup');
+          clearInterval(self.interval);
         }
       }, threshold);
     }
-
-    lastTime = performance.now();
+    this.lastTime = performance.now();
   },
 
   update: function() {

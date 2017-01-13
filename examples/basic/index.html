@@ -13,8 +13,10 @@
 
       <!-- UI widgets -->
       <a-entity position="0 0.8 0" rotation="0 0 0">
+        <a-entity id="target" position="0 0.5 -1" geometry="primitive: cone; height: 0.5; radiusBottom: 0.2; radiusTop: 0;" material="color: orange"></a-entity>
+
         <!-- Button -->
-        <a-entity ui-button position="0.3 0 0"></a-entity>
+        <a-entity id="colorButton" ui-button position="0.3 0 0"></a-entity>
         <a-entity ui-button position="0 0 0"></a-entity>
         <a-entity ui-button position="-0.3 0 0"></a-entity>
 
@@ -32,6 +34,18 @@
         <a-entity ui-rotary position="-0.3 0.1 -0.3" rotation="45 0 0"></a-entity>
       </a-entity>
     </a-scene>
+
+    <script>
+    // Object which we're going to modify
+    var targetEntity = document.querySelector('#target');
+
+    var colorButton = document.querySelector('#colorButton');
+
+    colorButton.addEventListener('pressed', function() {
+      var randomHexColor = Math.floor(Math.random() * 0xffffff).toString(16);
+      targetEntity.setAttribute('material', 'color: #' + randomHexColor);
+    })
+    </script>
 
     <!-- GitHub Corner. -->
     <a href="https://github.com/caseyyee/aframe-ui-widgets" class="github-corner">
