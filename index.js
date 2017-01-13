@@ -1,16 +1,9 @@
 window.AFRAME = require('aframe');
 
-AFRAME.registerComponent('button', require('./button'));
+AFRAME.registerComponent('ui-button', require('./src/button'));
 
-AFRAME.registerComponent('toggle', require('./toggle'));
+AFRAME.registerComponent('ui-toggle', require('./src/toggle'));
 
-AFRAME.registerComponent('slider', require('./slider'));
+AFRAME.registerComponent('ui-slider', require('./src/slider'));
 
-AFRAME.registerComponent('dial', require('./dial'));
-
-// helpers
-AFRAME.registerComponent('arrows', {
-  play: function () {
-    this.el.object3D.add(new THREE.AxisHelper( 0.4 ));
-  }
-});
+AFRAME.registerComponent('ui-rotary', require('./src/rotary'));

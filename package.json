@@ -1,12 +1,12 @@
 {
   "name": "",
   "version": "1.0.0",
-  "description": "Button component for A-Frame.",
+  "description": "UI Widgets for A-Frame.",
   "main": "index.js",
   "scripts": {
     "build": "browserify examples/main.js -o examples/build.js",
     "dev": "budo examples/main.js:build.js --dir examples --port 8000 --live --open",
-    "dist": "webpack index.js dist/.js && webpack -p index.js dist/.min.js",
+    "dist": "webpack index.js dist/ui-widgets.js && webpack -p index.js dist/ui-widgets.min.js",
     "lint": "semistandard -v | snazzy",
     "prepublish": "npm run dist",
     "preghpages": "npm run build && shx rm -rf gh-pages && shx mkdir gh-pages && shx cp -r examples/* gh-pages",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/caseyyee/aframe-su-button.git"
+    "url": "git+https://github.com/caseyyee/aframe-ui-widgets.git"
   },
   "keywords": [
     "aframe",
@@ -24,14 +24,15 @@
     "vr",
     "mozvr",
     "webvr",
-    "su-button"
+    "ui",
+    "widgets"
   ],
   "author": "caseyyee.ca@gmail.com",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/caseyyee/aframe-button-component/issues"
+    "url": "https://github.com/caseyyee/aframe-ui-widgets/issues"
   },
-  "homepage": "https://github.com/caseyyee/aframe-button-component#readme",
+  "homepage": "https://github.com/caseyyee/aframe-ui-widgets#readme",
   "devDependencies": {
     "aframe": "^0.4.0",
     "browserify": "^13.0.0",
