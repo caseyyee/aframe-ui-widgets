@@ -1,12 +1,20 @@
 module.exports = {
-  schema: {},
+  schema: {
+    color: { type: 'color', default: '#ffff00' },
+    size: { type: 'number', default: 0.5 },
+    min: { type: 'number', default: 0 },
+    max: { type: 'number', default: 1 },
+    value: { type: 'number', default: 0 },
+    innerSize: { type: 'number', default: 0.9 }
+  },
 
   multiple: true,
 
   init: function () {
-    var lever = new THREE.Mesh(new THREE.BoxGeometry( 0.04, 0.05, 0.08 ), new THREE.MeshLambertMaterial({color: 0xffff00}));
-    var track = new THREE.Mesh(new THREE.BoxGeometry( 0.48, 0.021, 0.01 ), new THREE.MeshLambertMaterial({color: 0x333333}));
-    var chassis = new THREE.Mesh(new THREE.BoxGeometry( 0.5, 0.02, 0.15 ), new THREE.MeshNormalMaterial());
+    var leverMaterial = new THREE.MeshLambertMaterial({color: this.data.color });
+    var lever = new THREE.Mesh(new THREE.BoxGeometry( 0.04, 0.05, 0.08 ), leverMaterial);
+    var track = new THREE.Mesh(new THREE.BoxGeometry( (this.data.size * this.data.innerSize), 0.021, 0.01 ), new THREE.MeshLambertMaterial({color: 0x333333}));
+    var chassis = new THREE.Mesh(new THREE.BoxGeometry( this.data.size, 0.02, 0.15 ), new THREE.MeshNormalMaterial());
     lever.position.y = 0.025;
 
     this.lever = lever;
@@ -18,42 +26,76 @@ module.exports = {
 
   play: function () {
     var self = this;
+    var el = this.el;
     var controllers = Array.prototype.slice.call(document.querySelectorAll('a-entity[hand-controls]'));
     self.grabbed = false;
 
+    el.addEventListener('rangeout', this.onTriggerUp.bind(this));
+
     controllers.forEach(function(controller){
-      controller.addEventListener('triggerdown', function(evt) {
-        var hand = evt.target.object3D;
-        var lever = self.lever;
+      controller.addEventListener('triggerdown', this.onTriggerDown.bind(this));
+      controller.addEventListener('triggerup', this.onTriggerUp.bind(this));
+    }.bind(this));
 
-        var handBB = new THREE.Box3().setFromObject(hand);
-        var leverBB = new THREE.Box3().setFromObject(lever);
-        var collision = handBB.intersectsBox(leverBB);
+    this.setValue(this.data.value);
+  },
 
-        if (collision) {
-          self.grabbed = hand;
-          self.grabbed.visible = false;
-        };
-      });
+  onTriggerDown: function(e) {
+    var hand = e.target.object3D;
+    var lever = this.lever;
 
-      controller.addEventListener('triggerup', function() {
-        if (self.grabbed) {
-          self.grabbed.visible = true;
-          self.grabbed = false;
-        }
-      });
-    });
+    var handBB = new THREE.Box3().setFromObject(hand);
+    var leverBB = new THREE.Box3().setFromObject(lever);
+    var collision = handBB.intersectsBox(leverBB);
+
+    if (collision) {
+      this.grabbed = hand;
+      this.grabbed.visible = false;
+    };
+  },
+
+  onTriggerUp: function() {
+    if (this.grabbed) {
+      this.grabbed.visible = true;
+      this.grabbed = false;
+    }
+  },
+
+  setValue: function(value) {
+    var lever = this.lever;
+    if (value < this.data.min) {
+      value = this.data.min;
+    } else if (value > this.data.max) {
+      value = this.data.max;
+    }
+
+    var sliderRange = this.data.size * this.data.innerSize;
+
+    lever.position.x = ((value / this.data.max) * sliderRange) - (sliderRange / 2);
   },
 
   tick: function() {
     if (this.grabbed) {
       var hand = this.grabbed;
+      var lever = this.lever;
+      var sliderSize = this.data.size;
+      var sliderRange = (sliderSize * this.data.innerSize) / 2;
 
       var handWorld = new THREE.Vector3().setFromMatrixPosition(hand.matrixWorld);
+      lever.parent.worldToLocal(handWorld);
+      lever.position.x = handWorld.x;
 
-      this.lever.parent.worldToLocal(handWorld);
+      if (Math.abs(lever.position.x) > (sliderSize / 2)) {
+        lever.position.x = sliderRange * Math.sign(lever.position.x);
+        this.el.emit('rangeout');
+      }
 
-      this.lever.position.x = handWorld.x;
+      var value = ((lever.position.x + sliderRange) * (this.data.max / (sliderSize * this.data.innerSize))) + this.data.min;
+
+      if (this.value !== value) {
+        this.el.emit('change', { value: value });
+        this.value = value;
+      }
     }
   }
 };

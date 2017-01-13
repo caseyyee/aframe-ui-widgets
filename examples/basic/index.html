@@ -25,7 +25,7 @@
         <a-entity ui-toggle position="0.8 0 0"></a-entity>
 
         <!-- Slider -->
-        <a-entity ui-slider position="0 0 0.3"></a-entity>
+        <a-entity id="valueSlider" ui-slider position="0 0 0.3"></a-entity>
         <a-entity ui-slider position="-0.6 0 0" rotation="0 90 0"></a-entity>
 
         <!-- Rotary Knob -->
@@ -44,6 +44,11 @@
     colorButton.addEventListener('pressed', function() {
       var randomHexColor = Math.floor(Math.random() * 0xffffff).toString(16);
       targetEntity.setAttribute('material', 'color: #' + randomHexColor);
+    })
+
+    var valueSlider = document.querySelector('#valueSlider');
+    valueSlider.addEventListener('change', function(e) {
+      targetEntity.setAttribute('scale', { x: e.detail.value, y: e.detail.value, z: e.detail.value });
     })
     </script>
 

@@ -1,8 +1,8 @@
 module.exports = {
   schema: {
+    size: { type: 'number', default: 0.1 },
     color: { type: 'color', default: '#ffff00' },
     pressedColor: { type: 'color', default: '#FC4007' },
-    size: { type: 'number', default: 0.1 },
     topY: { type: 'number', default: 0.02 },
     topDepressY: { type: 'number', default: 0.01 }
   },
