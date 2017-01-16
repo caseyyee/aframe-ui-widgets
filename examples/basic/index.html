@@ -12,7 +12,7 @@
       <a-entity hand-controls="right"></a-entity>
 
       <!-- UI widgets -->
-      <a-entity position="0 0.8 0" rotation="0 0 0">
+      <a-entity position="-1 0.8 0" rotation="0 0 0">
         <a-entity id="target" position="0 0.5 -1" geometry="primitive: cone; height: 0.5; radiusBottom: 0.2; radiusTop: 0;" material="color: orange"></a-entity>
 
         <!-- Button -->
@@ -21,11 +21,11 @@
         <a-entity ui-button position="-0.3 0 0"></a-entity>
 
         <!-- Toggle Switch -->
-        <a-entity ui-toggle position="0.6 0 0"></a-entity>
+        <a-entity id="toggleSwitch" ui-toggle position="0.6 0 0"></a-entity>
         <a-entity ui-toggle position="0.8 0 0"></a-entity>
 
         <!-- Slider -->
-        <a-entity id="valueSlider" ui-slider position="0 0 0.3"></a-entity>
+        <a-entity id="valueSlider" ui-slider="min: 1; max: 2" position="0 0 0.3"></a-entity>
         <a-entity ui-slider position="-0.6 0 0" rotation="0 90 0"></a-entity>
 
         <!-- Rotary Knob -->
@@ -44,12 +44,24 @@
     colorButton.addEventListener('pressed', function() {
       var randomHexColor = Math.floor(Math.random() * 0xffffff).toString(16);
       targetEntity.setAttribute('material', 'color: #' + randomHexColor);
-    })
+    });
 
     var valueSlider = document.querySelector('#valueSlider');
     valueSlider.addEventListener('change', function(e) {
-      targetEntity.setAttribute('scale', { x: e.detail.value, y: e.detail.value, z: e.detail.value });
-    })
+      var value = e.detail.value;
+      targetEntity.setAttribute('scale', { x: value, y: value, z: value });
+    });
+
+    var toggleSwitch = document.querySelector('#toggleSwitch');
+    toggleSwitch.addEventListener('change', function(e) {
+      console.log('changing');
+      var value = e.detail.value;
+      var rotate = 0;
+      if (value) {
+        rotate = 180;
+      }
+      targetEntity.setAttribute('rotation', { x: 0, y: 0, z: rotate });
+    });
     </script>
 
     <!-- GitHub Corner. -->
