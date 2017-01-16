@@ -33,6 +33,8 @@ module.exports = {
       controller.addEventListener('triggerup', this.onTriggerUp.bind(this));
     }.bind(this));
 
+    el.addEventListener('click', this.toggleValue.bind(this));
+
     this.setValue(this.data.value);
   },
 
@@ -63,6 +65,11 @@ module.exports = {
       this.el.emit('change', { value: value });
       this.value = value;
     }
+  },
+
+  toggleValue: function() {
+    var value = this.value ? 0 : 1;
+    this.setValue(value);
   },
 
   tick: function() {
