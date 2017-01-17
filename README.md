@@ -1,6 +1,8 @@
 ## UI widgets for [A-Frame](https://aframe.io).
 
-Compatible with HTC VIVE and Oculus touch.
+![A-Frame UI Widgets](https://raw.githubusercontent.com/caseyyee/aframe-ui-widgets/master/img/preview.gif)
+
+Works with HTC VIVE and Oculus touch in a WebVR enabled browser.
 
 
 ### Installation
@@ -13,6 +15,15 @@ Include component script into your project along with A-Frame.
   <script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
   <script src="https://rawgit.com/caseyyee/aframe-ui-widgets/master/dist/ui-widgets.min.js"></script>
 </head>
+
+<a-scene>
+  <!-- Adds hand controls -->
+  <a-entity hand-controls="left"></a-entity>
+  <a-entity hand-controls="right"></a-entity>
+
+  <!-- Adds UI budget widget -->
+  <a-entity ui-button></a-entity>
+</a-scene>
 ````
 
 
