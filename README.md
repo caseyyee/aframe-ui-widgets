@@ -24,8 +24,7 @@ Include component script into your project along with A-Frame.
 <a-entity ui-button></a-entity>
 ````
 
-Events
-
+##### Events
 | Event         | Description
 | ------------- | -------------
 | buttondown | Emitted when button is pushed down.
@@ -39,17 +38,16 @@ Events
 <a-entity ui-toggle></a-entity>
 ````
 
-Properties
-
+##### Properties
 | Property      | Description   | Default Value
 | ------------- | ------------- | -------------
 | value | sets toggle position. | 0
 
-Events
-
+#### Events
 | Event         | Description
 | ------------- | -------------
 | change | Emitted when switch has been toggled.
+
 
 
 #### Slider
@@ -58,11 +56,17 @@ Events
 <a-entity ui-slider></a-entity>
 ````
 
+##### Properties
 | Property         | Description
 | ------------- | -------------
 | min | sets minimum value | 0
 | max | sets maximum value | 1
 | value | sets value | 0
+
+##### Change
+| Event         | Description
+| ------------- | -------------
+| change | Emitted when slider has been moved.
 
 
 #### Rotary Knob
@@ -71,6 +75,7 @@ Events
 <a-entity ui-rotary></a-entity>
 ````
 
+##### Events
 | Event         | Description
 | ------------- | -------------
 | change | Emitted when rotary has been turned.
