@@ -70032,76 +70032,82 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-	  schema: {},
+	  schema: {
+	    size: { type: 'number', default: 0.1 },
+	    color: { type: 'color', default: '#ffff00' },
+	    pressedColor: { type: 'color', default: '#FC4007' },
+	    topY: { type: 'number', default: 0.02 },
+	    topDepressY: { type: 'number', default: 0.01 }
+	  },
 
 	  multiple: true,
 
 	  init: function () {
-	    var top = new THREE.Mesh(new THREE.CylinderGeometry( 0.1, 0.1, 0.02, 10 ), new THREE.MeshLambertMaterial({color: 0xffff00}));
+	    var topMaterial = new THREE.MeshLambertMaterial({color: this.data.color });
+	    var top = new THREE.Mesh(new THREE.CylinderGeometry( 0.1, 0.1, 0.02, 20 ), topMaterial);
+	    var bodyMaterial = new THREE.MeshNormalMaterial();
+	    var body = new THREE.Mesh(new THREE.CylinderGeometry( 0.12, 0.15, 0.02, 20 ), bodyMaterial);
+
+	    top.position.y = this.data.topY;
 	    this.top = top;
-	    var chassis = new THREE.Mesh(new THREE.CylinderGeometry( 0.12, 0.15, 0.02, 10 ), new THREE.MeshNormalMaterial());
+	    body.add(top);
+	    this.el.setObject3D('mesh', body);
 
-	    top.position.y = 0.02;
+	    var controllers = document.querySelectorAll('a-entity[hand-controls]');
+	    this.controllers = Array.prototype.slice.call(controllers);
 
-	    chassis.add(top);
-
-	    this.el.setObject3D('mesh', chassis);
-
-	    this.controllers = Array.prototype.slice.call(document.querySelectorAll('a-entity[hand-controls]'));
+	    this.pressed = false;
+	    this.interval = null;
+	    this.lastTime = 0;
 	  },
 
-
-
 	  play: function () {
-
-	    this.el.addEventListener('hit', this.onHit);
-
-	    this.el.addEventListener('mousedown', this.onButtonDown.bind(this));
-
-	    this.el.addEventListener('mouseup', this.onButtonUp.bind(this));
-
-	    this.el.addEventListener('buttondown', this.onButtonDown.bind(this));
-
-	    this.el.addEventListener('buttonup', this.onButtonUp.bind(this));
+	    var el = this.el;
+	    // cursor controls
+	    el.addEventListener('mousedown', this.onButtonDown.bind(this));
+	    el.addEventListener('mouseup', this.onButtonUp.bind(this));
+	    el.addEventListener('mouseleave', this.onButtonUp.bind(this));
+	    // motion controls
+	    el.addEventListener('hit', this.onHit);
+	    el.addEventListener('touchdown', this.onButtonDown.bind(this));
+	    el.addEventListener('touchup', this.onButtonUp.bind(this));
 	  },
 
 	  onButtonDown: function() {
-	    this.top.position.y = 0.01;
-	    this.top.material.color.set(0xff0000);
+	    var top = this.top;
+	    var el = this.el;
+	    top.position.y = this.data.topY - this.data.topDepressY;
+	    top.material.color.set(this.data.pressedColor);
+	    el.emit('buttondown');
 	  },
 
 	  onButtonUp: function() {
-	    this.top.position.y = 0.015;
-	    this.top.material.color.set(0xffff00);
+	    var top = this.top;
+	    var el = this.el;
+	    top.position.y = this.data.topY;
+	    top.material.color.set(this.data.color);
+	    el.emit('buttonup');
+	    el.emit('pressed');
 	  },
 
+	  // handles hand controller collisions
 	  onHit: function (evt) {
-	    var pressed = false;
-
-	    var interval;
 	    var threshold = 30;
-	    var lastTime = 0;
-
-	    var self = this;
-
-	    if (!pressed) {
-	      pressed = true;
-
-	      self.emit('buttondown');
-
-	      interval = setInterval(function() {
-	        var delta = performance.now() - lastTime;
+	    if (!this.pressed) {
+	      this.pressed = true;
+	      this.emit('touchdown');
+	      var self = this;
+	      this.interval = setInterval(function() {
+	        var delta = performance.now() - self.lastTime;
 	        if (delta > threshold) {
-	          pressed = false;
-	          lastTime = null;
-	          clearInterval(interval);
-	          self.emit('buttonup');
-	          self.emit('buttonpressed');
+	          self.pressed = false;
+	          self.lastTime = 0;
+	          self.emit('touchup');
+	          clearInterval(self.interval);
 	        }
 	      }, threshold);
 	    }
-
-	    lastTime = performance.now();
+	    this.lastTime = performance.now();
 	  },
 
 	  update: function() {
@@ -70128,12 +70134,14 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-	  schema: {},
+	  schema: {
+	    value: { type: 'int', default: 0 }
+	  },
 
 	  multiple: true,
 
 	  init: function () {
-	    var lever = new THREE.Mesh(new THREE.CylinderGeometry( 0.04, 0.03, 0.1 ), new THREE.MeshLambertMaterial({color: 0xffff00}));
+	    var lever = new THREE.Mesh(new THREE.CylinderGeometry( 0.04, 0.03, 0.1, 15 ), new THREE.MeshLambertMaterial({color: 0xffff00}));
 	    var track = new THREE.Mesh(new THREE.BoxGeometry(0.07 , 0.021, 0.20 ), new THREE.MeshLambertMaterial({color: 0x333333}));
 	    var chassis = new THREE.Mesh(new THREE.BoxGeometry( 0.15, 0.02, 0.25 ), new THREE.MeshNormalMaterial());
 	    lever.position.y = 0.05;
@@ -70143,54 +70151,81 @@
 	    chassis.add(lever);
 
 	    this.el.setObject3D('mesh', chassis);
+
+	    this.value = this.data.value;
 	  },
 
 	  play: function () {
 	    var self = this;
+	    var el = this.el;
 	    var controllers = Array.prototype.slice.call(document.querySelectorAll('a-entity[hand-controls]'));
 	    self.grabbed = false;
 
+	    el.addEventListener('rangeout', this.onTriggerUp.bind(this));
+
 	    controllers.forEach(function(controller){
-	      controller.addEventListener('triggerdown', function(evt) {
-	        var hand = evt.target.object3D;
-	        var lever = self.lever;
+	      controller.addEventListener('triggerdown', this.onTriggerDown.bind(this));
+	      controller.addEventListener('triggerup', this.onTriggerUp.bind(this));
+	    }.bind(this));
 
-	        var handBB = new THREE.Box3().setFromObject(hand);
-	        var leverBB = new THREE.Box3().setFromObject(lever);
-	        var collision = handBB.intersectsBox(leverBB);
+	    el.addEventListener('click', this.toggleValue.bind(this));
 
-	        if (collision) {
-	          self.grabbed = hand;
-	          self.grabbed.visible = false;
-	        };
-	      });
+	    this.setValue(this.data.value);
+	  },
 
-	      controller.addEventListener('triggerup', function() {
-	        if (self.grabbed) {
-	          self.grabbed.visible = true;
-	          self.grabbed = false;
-	        }
-	      });
-	    });
+	  onTriggerDown: function(e) {
+	    var hand = e.target.object3D;
+	    var lever = this.lever;
+
+	    var handBB = new THREE.Box3().setFromObject(hand);
+	    var leverBB = new THREE.Box3().setFromObject(lever);
+	    var collision = handBB.intersectsBox(leverBB);
+
+	    if (collision) {
+	      this.grabbed = hand;
+	      this.grabbed.visible = false;
+	    };
+	  },
+
+	  onTriggerUp: function() {
+	    if (this.grabbed) {
+	      this.grabbed.visible = true;
+	      this.grabbed = false;
+	    }
+	  },
+
+	  setValue: function(value) {
+	    this.lever.position.z = (value) ? -0.08 : 0.08;
+	    if (this.value !== value) {
+	      this.el.emit('change', { value: value });
+	      this.value = value;
+	    }
+	  },
+
+	  toggleValue: function() {
+	    var value = this.value ? 0 : 1;
+	    this.setValue(value);
 	  },
 
 	  tick: function() {
 	    var axis = 'z';
-
 	    var hand = this.grabbed;
-
 	    var lever = this.lever;
 
 	    if (this.grabbed) {
 	      var handWorld = new THREE.Vector3().setFromMatrixPosition(hand.matrixWorld);
-
 	      lever.parent.worldToLocal(handWorld);
-
 	      lever.position[axis] = handWorld[axis];
 
-	      var leverAxisPosition = lever.position[axis];
+	      if (Math.abs(lever.position[axis]) > 0.15) {
+	        this.el.emit('rangeout');
+	      }
 	    } else {
-	      lever.position[axis] = Math.sign(lever.position[axis]) === -1 ? -0.08 : 0.08;
+	      if (Math.sign(lever.position[axis]) === -1) {
+	        this.setValue(1);
+	      } else {
+	        this.setValue(0);
+	      }
 	    }
 	  }
 	};
@@ -70201,14 +70236,22 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-	  schema: {},
+	  schema: {
+	    color: { type: 'color', default: '#ffff00' },
+	    size: { type: 'number', default: 0.5 },
+	    min: { type: 'number', default: 0 },
+	    max: { type: 'number', default: 1 },
+	    value: { type: 'number', default: 0 },
+	    innerSize: { type: 'number', default: 0.9 }
+	  },
 
 	  multiple: true,
 
 	  init: function () {
-	    var lever = new THREE.Mesh(new THREE.BoxGeometry( 0.04, 0.05, 0.08 ), new THREE.MeshLambertMaterial({color: 0xffff00}));
-	    var track = new THREE.Mesh(new THREE.BoxGeometry( 0.48, 0.021, 0.01 ), new THREE.MeshLambertMaterial({color: 0x333333}));
-	    var chassis = new THREE.Mesh(new THREE.BoxGeometry( 0.5, 0.02, 0.15 ), new THREE.MeshNormalMaterial());
+	    var leverMaterial = new THREE.MeshLambertMaterial({color: this.data.color });
+	    var lever = new THREE.Mesh(new THREE.BoxGeometry( 0.04, 0.05, 0.08 ), leverMaterial);
+	    var track = new THREE.Mesh(new THREE.BoxGeometry( (this.data.size * this.data.innerSize), 0.021, 0.01 ), new THREE.MeshLambertMaterial({color: 0x333333}));
+	    var chassis = new THREE.Mesh(new THREE.BoxGeometry( this.data.size, 0.02, 0.15 ), new THREE.MeshNormalMaterial());
 	    lever.position.y = 0.025;
 
 	    this.lever = lever;
@@ -70220,42 +70263,76 @@
 
 	  play: function () {
 	    var self = this;
+	    var el = this.el;
 	    var controllers = Array.prototype.slice.call(document.querySelectorAll('a-entity[hand-controls]'));
 	    self.grabbed = false;
 
+	    el.addEventListener('rangeout', this.onTriggerUp.bind(this));
+
 	    controllers.forEach(function(controller){
-	      controller.addEventListener('triggerdown', function(evt) {
-	        var hand = evt.target.object3D;
-	        var lever = self.lever;
+	      controller.addEventListener('triggerdown', this.onTriggerDown.bind(this));
+	      controller.addEventListener('triggerup', this.onTriggerUp.bind(this));
+	    }.bind(this));
 
-	        var handBB = new THREE.Box3().setFromObject(hand);
-	        var leverBB = new THREE.Box3().setFromObject(lever);
-	        var collision = handBB.intersectsBox(leverBB);
+	    this.setValue(this.data.value);
+	  },
 
-	        if (collision) {
-	          self.grabbed = hand;
-	          self.grabbed.visible = false;
-	        };
-	      });
+	  onTriggerDown: function(e) {
+	    var hand = e.target.object3D;
+	    var lever = this.lever;
 
-	      controller.addEventListener('triggerup', function() {
-	        if (self.grabbed) {
-	          self.grabbed.visible = true;
-	          self.grabbed = false;
-	        }
-	      });
-	    });
+	    var handBB = new THREE.Box3().setFromObject(hand);
+	    var leverBB = new THREE.Box3().setFromObject(lever);
+	    var collision = handBB.intersectsBox(leverBB);
+
+	    if (collision) {
+	      this.grabbed = hand;
+	      this.grabbed.visible = false;
+	    };
+	  },
+
+	  onTriggerUp: function() {
+	    if (this.grabbed) {
+	      this.grabbed.visible = true;
+	      this.grabbed = false;
+	    }
+	  },
+
+	  setValue: function(value) {
+	    var lever = this.lever;
+	    if (value < this.data.min) {
+	      value = this.data.min;
+	    } else if (value > this.data.max) {
+	      value = this.data.max;
+	    }
+
+	    var sliderRange = this.data.size * this.data.innerSize;
+
+	    lever.position.x = ((value / this.data.max) * sliderRange) - (sliderRange / 2);
 	  },
 
 	  tick: function() {
 	    if (this.grabbed) {
 	      var hand = this.grabbed;
+	      var lever = this.lever;
+	      var sliderSize = this.data.size;
+	      var sliderRange = (sliderSize * this.data.innerSize) / 2;
 
 	      var handWorld = new THREE.Vector3().setFromMatrixPosition(hand.matrixWorld);
+	      lever.parent.worldToLocal(handWorld);
+	      lever.position.x = handWorld.x;
 
-	      this.lever.parent.worldToLocal(handWorld);
+	      if (Math.abs(lever.position.x) > (sliderSize / 2)) {
+	        lever.position.x = sliderRange * Math.sign(lever.position.x);
+	        this.el.emit('rangeout');
+	      }
 
-	      this.lever.position.x = handWorld.x;
+	      var value = ((lever.position.x + sliderRange) * (this.data.max / (sliderSize * this.data.innerSize))) + this.data.min;
+
+	      if (this.value !== value) {
+	        this.el.emit('change', { value: value });
+	        this.value = value;
+	      }
 	    }
 	  }
 	};
@@ -70274,16 +70351,16 @@
 	    var indicator = new THREE.Mesh(new THREE.BoxGeometry( 0.02, 0.08, 0.06 ), new THREE.MeshLambertMaterial({color: 0xff3333}))
 	    indicator.position.z = -0.08;
 	    indicator.position.y = 0.02;
-	    var knob = new THREE.Mesh(new THREE.CylinderGeometry( 0.1, 0.1, 0.1 ), new THREE.MeshLambertMaterial({color: 0x666666}));
+
+	    var knob = new THREE.Mesh(new THREE.CylinderGeometry( 0.1, 0.1, 0.1, 20 ), new THREE.MeshLambertMaterial({color: 0x666666}));
 	    knob.add(indicator);
-	    var chassis = new THREE.Mesh(new THREE.CylinderGeometry( 0.12, 0.15, 0.02, 10 ), new THREE.MeshNormalMaterial());
-
-	    this.knob = knob;
 	    knob.position.y = 0.025;
+	    this.knob = knob;
 
-	    chassis.add(knob);
+	    var body = new THREE.Mesh(new THREE.CylinderGeometry( 0.12, 0.15, 0.02, 20 ), new THREE.MeshNormalMaterial());
+	    body.add(knob);
 
-	    this.el.setObject3D('mesh', chassis);
+	    this.el.setObject3D('mesh', body);
 	  },
 
 
@@ -70294,27 +70371,30 @@
 	    self.grabbed = false;
 
 	    controllers.forEach(function(controller){
-	      controller.addEventListener('triggerdown', function(evt) {
-	        var hand = evt.target.object3D;
-	        var knob = self.knob;
+	      controller.addEventListener('triggerdown', this.onTriggerDown.bind(this));
+	      controller.addEventListener('triggerup', this.onTriggerUp.bind(this));
+	    }.bind(this));
+	  },
 
-	        var handBB = new THREE.Box3().setFromObject(hand);
-	        var knobBB = new THREE.Box3().setFromObject(knob);
-	        var collision = handBB.intersectsBox(knobBB);
+	  onTriggerUp: function() {
+	    if (this.grabbed) {
+	      this.grabbed.visible = true;
+	      this.grabbed = false;
+	    }
+	  },
 
-	        if (collision) {
-	          self.grabbed = hand;
-	          self.grabbed.visible = false;
-	        };
-	      });
+	  onTriggerDown: function(e) {
+	    var hand = e.target.object3D;
+	    var knob = this.knob;
 
-	      controller.addEventListener('triggerup', function() {
-	        if (self.grabbed) {
-	          self.grabbed.visible = true;
-	          self.grabbed = false;
-	        }
-	      });
-	    });
+	    var handBB = new THREE.Box3().setFromObject(hand);
+	    var knobBB = new THREE.Box3().setFromObject(knob);
+	    var collision = handBB.intersectsBox(knobBB);
+
+	    if (collision) {
+	      this.grabbed = hand;
+	      this.grabbed.visible = false;
+	    };
 	  },
 
 	  tick: function () {
@@ -70323,6 +70403,7 @@
 	      var handRotation = this.grabbed.rotation[axis];
 	      var deltaChange = !this.lastRotation ? 0 : handRotation - this.lastRotation;
 	      this.knob.rotation.y += deltaChange;
+	      this.el.emit('change', { value: deltaChange * -1 });
 	      this.lastRotation = handRotation;
 	    } else {
 	      this.lastRotation = 0;
