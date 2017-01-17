@@ -1,2 +1,0 @@
-require('./flat');
-require('./standard');
