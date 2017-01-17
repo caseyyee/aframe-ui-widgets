@@ -7,29 +7,38 @@
 Works with HTC VIVE and Oculus touch in a WebVR enabled browser.
 
 
-### Installation
-
-Include component script into your project along with A-Frame.
+### Basic usage
 
 ````html
 <head>
   <title>My A-Frame Scene</title>
   <script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
+
+  <!-- Include component script into your project along with A-Frame. -->
   <script src="https://rawgit.com/caseyyee/aframe-ui-widgets/master/dist/ui-widgets.min.js"></script>
 </head>
 
-<a-scene>
-  <!-- Adds hand controls -->
-  <a-entity hand-controls="left"></a-entity>
-  <a-entity hand-controls="right"></a-entity>
+<body>
+  <a-scene>
+    <!-- Adds hand controls -->
+    <a-entity hand-controls="left"></a-entity>
+    <a-entity hand-controls="right"></a-entity>
 
-  <!-- Adds UI budget widget -->
-  <a-entity ui-button></a-entity>
-</a-scene>
+    <!-- Adds UI button widget -->
+    <a-entity id="mybutton" ui-button></a-entity>
+  </a-scene>
+  <script>
+  var mybutton = document.querySelector('#mybutton');
+  mybutton.addEventListener('pressed', function () {
+    // do stuff here.
+  });
+  </script>
+</body>
+
+
 ````
 
-
-### Usage
+### UI Components
 
 #### Button
 
