@@ -1,5 +1,5 @@
 {
-  "name": "",
+  "name": "aframe-ui-widgets",
   "version": "1.0.0",
   "description": "UI Widgets for A-Frame.",
   "main": "index.js",
