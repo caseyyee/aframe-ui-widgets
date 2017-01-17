@@ -1,5 +1,7 @@
 ## UI widgets for [A-Frame](https://aframe.io).
 
+### [Give it a whirl!](https://caseyyee.github.io/aframe-ui-widgets/examples/)
+
 ![A-Frame UI Widgets](https://raw.githubusercontent.com/caseyyee/aframe-ui-widgets/master/img/preview.gif)
 
 Works with HTC VIVE and Oculus touch in a WebVR enabled browser.
