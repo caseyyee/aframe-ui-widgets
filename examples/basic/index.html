@@ -12,26 +12,25 @@
       <a-entity hand-controls="right"></a-entity>
 
       <!-- UI widgets -->
-      <a-entity position="-1 0.8 0" rotation="0 0 0">
-        <a-entity id="target" position="0 0.5 -1" geometry="primitive: cone; height: 0.5; radiusBottom: 0.2; radiusTop: 0;" material="color: orange"></a-entity>
+      <a-entity position="0 1 0" rotation="0 0 0">
+        <a-entity id="target"
+          position="0 0.5 -1.5"
+          geometry="primitive: torusKnot; radius: 0.5; radiusTubular: 0.02; p: 3; q: 2"
+          material="color: orange">
+        </a-entity>
 
         <!-- Button -->
-        <a-entity id="colorButton" ui-button position="0.3 0 0"></a-entity>
-        <a-entity ui-button position="0 0 0"></a-entity>
-        <a-entity ui-button position="-0.3 0 0"></a-entity>
-
-        <!-- Toggle Switch -->
-        <a-entity id="toggleSwitch" ui-toggle position="0.6 0 0"></a-entity>
-        <a-entity ui-toggle position="0.8 0 0"></a-entity>
-
-        <!-- Slider -->
-        <a-entity id="valueSlider" ui-slider="min: 1; max: 2" position="0 0 0.3"></a-entity>
-        <a-entity ui-slider position="-0.6 0 0" rotation="0 90 0"></a-entity>
+        <a-entity id="button" ui-button position="-0.35 0.1 -0.3" rotation="45 0 0"></a-entity>
 
         <!-- Rotary Knob -->
-        <a-entity ui-rotary position="0.3 0.1 -0.3" rotation="45 0 0"></a-entity>
-        <a-entity ui-rotary position="0 0.1 -0.3" rotation="45 0 0"></a-entity>
-        <a-entity ui-rotary position="-0.3 0.1 -0.3" rotation="45 0 0"></a-entity>
+        <a-entity id="rotaryKnob" ui-rotary position="0 0.1 -0.3" rotation="45 0 0"></a-entity>
+
+        <!-- Toggle Switch -->
+        <a-entity id="toggleSwitch" ui-toggle="value: 0" position="0.3 0.1 -0.3" rotation="45 0 0"></a-entity>
+
+        <!-- Slider -->
+        <a-entity id="valueSlider" ui-slider="min: 1; max: 10; value: 1" position="0 0 0"></a-entity>
+
       </a-entity>
     </a-scene>
 
@@ -39,28 +38,43 @@
     // Object which we're going to modify
     var targetEntity = document.querySelector('#target');
 
-    var colorButton = document.querySelector('#colorButton');
-
-    colorButton.addEventListener('pressed', function() {
+    // picks random color
+    var button = document.querySelector('#button');
+    button.addEventListener('pressed', function() {
       var randomHexColor = Math.floor(Math.random() * 0xffffff).toString(16);
-      targetEntity.setAttribute('material', 'color: #' + randomHexColor);
+      targetEntity.setAttribute('material', {
+        color: '#' + randomHexColor
+      });
     });
 
+    // changes size
     var valueSlider = document.querySelector('#valueSlider');
     valueSlider.addEventListener('change', function(e) {
-      var value = e.detail.value;
-      targetEntity.setAttribute('scale', { x: value, y: value, z: value });
+      targetEntity.setAttribute('geometry', { q: e.detail.value });
     });
 
+    // animates object
     var toggleSwitch = document.querySelector('#toggleSwitch');
+    var interval;
     toggleSwitch.addEventListener('change', function(e) {
-      console.log('changing');
-      var value = e.detail.value;
-      var rotate = 0;
-      if (value) {
-        rotate = 180;
+      if (e.detail.value) {
+        interval = setInterval(function() {
+          targetEntity.setAttribute('rotation', {
+            y: targetEntity.getAttribute('rotation').y + 1
+          })
+        }, 10);
+      } else {
+        clearInterval(interval);
       }
-      targetEntity.setAttribute('rotation', { x: 0, y: 0, z: rotate });
+    });
+
+    // changes tubular radius
+    var rotaryKnob = document.querySelector('#rotaryKnob');
+    rotaryKnob.addEventListener('change', function(e) {
+      var value = e.detail.value * 0.01;
+      targetEntity.setAttribute('geometry', {
+        radiusTubular: targetEntity.getAttribute('geometry').radiusTubular + value
+      });
     });
     </script>
 
