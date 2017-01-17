@@ -6,7 +6,7 @@ module.exports = {
   multiple: true,
 
   init: function () {
-    var lever = new THREE.Mesh(new THREE.CylinderGeometry( 0.04, 0.03, 0.1 ), new THREE.MeshLambertMaterial({color: 0xffff00}));
+    var lever = new THREE.Mesh(new THREE.CylinderGeometry( 0.04, 0.03, 0.1, 15 ), new THREE.MeshLambertMaterial({color: 0xffff00}));
     var track = new THREE.Mesh(new THREE.BoxGeometry(0.07 , 0.021, 0.20 ), new THREE.MeshLambertMaterial({color: 0x333333}));
     var chassis = new THREE.Mesh(new THREE.BoxGeometry( 0.15, 0.02, 0.25 ), new THREE.MeshNormalMaterial());
     lever.position.y = 0.05;

@@ -11,9 +11,9 @@ module.exports = {
 
   init: function () {
     var topMaterial = new THREE.MeshLambertMaterial({color: this.data.color });
-    var top = new THREE.Mesh(new THREE.CylinderGeometry( 0.1, 0.1, 0.02, 10 ), topMaterial);
+    var top = new THREE.Mesh(new THREE.CylinderGeometry( 0.1, 0.1, 0.02, 20 ), topMaterial);
     var bodyMaterial = new THREE.MeshNormalMaterial();
-    var body = new THREE.Mesh(new THREE.CylinderGeometry( 0.12, 0.15, 0.02, 10 ), bodyMaterial);
+    var body = new THREE.Mesh(new THREE.CylinderGeometry( 0.12, 0.15, 0.02, 20 ), bodyMaterial);
 
     top.position.y = this.data.topY;
     this.top = top;

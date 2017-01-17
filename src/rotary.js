@@ -8,12 +8,12 @@ module.exports = {
     indicator.position.z = -0.08;
     indicator.position.y = 0.02;
 
-    var knob = new THREE.Mesh(new THREE.CylinderGeometry( 0.1, 0.1, 0.1 ), new THREE.MeshLambertMaterial({color: 0x666666}));
+    var knob = new THREE.Mesh(new THREE.CylinderGeometry( 0.1, 0.1, 0.1, 20 ), new THREE.MeshLambertMaterial({color: 0x666666}));
     knob.add(indicator);
     knob.position.y = 0.025;
     this.knob = knob;
 
-    var body = new THREE.Mesh(new THREE.CylinderGeometry( 0.12, 0.15, 0.02, 10 ), new THREE.MeshNormalMaterial());
+    var body = new THREE.Mesh(new THREE.CylinderGeometry( 0.12, 0.15, 0.02, 20 ), new THREE.MeshNormalMaterial());
     body.add(knob);
 
     this.el.setObject3D('mesh', body);
