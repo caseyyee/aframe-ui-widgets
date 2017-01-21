@@ -17,29 +17,33 @@ module.exports = {
     body.add(knob);
 
     this.el.setObject3D('mesh', body);
+
+    this.controllers = Array.prototype.slice.call(document.querySelectorAll('a-entity[hand-controls]'));
   },
 
-
-
   play: function () {
-    var self = this;
-    var controllers = Array.prototype.slice.call(document.querySelectorAll('a-entity[hand-controls]'));
-    self.grabbed = false;
-
-    controllers.forEach(function(controller){
+    this.grabbed = false;
+    this.controllers.forEach(function (controller) {
       controller.addEventListener('triggerdown', this.onTriggerDown.bind(this));
       controller.addEventListener('triggerup', this.onTriggerUp.bind(this));
     }.bind(this));
   },
 
-  onTriggerUp: function() {
+  pause: function () {
+    this.controllers.forEach(function (controller) {
+      controller.removeEventListener('triggerdown', this.onTriggerDown.bind(this));
+      controller.removeEventListener('triggerup', this.onTriggerUp.bind(this));
+    }.bind(this));
+  },
+
+  onTriggerUp: function () {
     if (this.grabbed) {
       this.grabbed.visible = true;
       this.grabbed = false;
     }
   },
 
-  onTriggerDown: function(e) {
+  onTriggerDown: function (e) {
     var hand = e.target.object3D;
     var knob = this.knob;
 

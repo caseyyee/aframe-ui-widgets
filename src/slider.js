@@ -22,22 +22,27 @@ module.exports = {
     chassis.add(lever);
 
     this.el.setObject3D('mesh', chassis);
+
+    this.controllers = Array.prototype.slice.call(document.querySelectorAll('a-entity[hand-controls]'));
+
+    this.setValue(this.data.value);
   },
 
   play: function () {
-    var self = this;
-    var el = this.el;
-    var controllers = Array.prototype.slice.call(document.querySelectorAll('a-entity[hand-controls]'));
-    self.grabbed = false;
-
-    el.addEventListener('rangeout', this.onTriggerUp.bind(this));
-
-    controllers.forEach(function(controller){
+    this.grabbed = false;
+    this.el.addEventListener('rangeout', this.onTriggerUp.bind(this));
+    this.controllers.forEach(function (controller){
       controller.addEventListener('triggerdown', this.onTriggerDown.bind(this));
       controller.addEventListener('triggerup', this.onTriggerUp.bind(this));
     }.bind(this));
+  },
 
-    this.setValue(this.data.value);
+  pause: function () {
+    this.el.removeEventListener('rangeout', this.onTriggerUp.bind(this));
+    this.controllers.forEach(function (controller){
+      controller.removeEventListener('triggerdown', this.onTriggerDown.bind(this));
+      controller.removeEventListener('triggerup', this.onTriggerUp.bind(this));
+    }.bind(this));
   },
 
   onTriggerDown: function(e) {

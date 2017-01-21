@@ -40,7 +40,17 @@ module.exports = {
     el.addEventListener('touchup', this.onButtonUp.bind(this));
   },
 
-  onButtonDown: function() {
+  pause: function () {
+    var el = this.el;
+    el.removeEventListener('mousedown', this.onButtonDown.bind(this));
+    el.removeEventListener('mouseup', this.onButtonUp.bind(this));
+    el.removeEventListener('mouseleave', this.onButtonUp.bind(this));
+    el.removeEventListener('hit', this.onHit);
+    el.removeEventListener('touchdown', this.onButtonDown.bind(this));
+    el.removeEventListener('touchup', this.onButtonUp.bind(this));
+  },
+
+  onButtonDown: function () {
     var top = this.top;
     var el = this.el;
     top.position.y = this.data.topY - this.data.topDepressY;
@@ -48,7 +58,7 @@ module.exports = {
     el.emit('buttondown');
   },
 
-  onButtonUp: function() {
+  onButtonUp: function () {
     var top = this.top;
     var el = this.el;
     top.position.y = this.data.topY;
@@ -77,7 +87,7 @@ module.exports = {
     this.lastTime = performance.now();
   },
 
-  update: function() {
+  update: function () {
     this.el.setAttribute('cursor-listener','');
   },
 
