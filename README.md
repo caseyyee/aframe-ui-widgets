@@ -24,6 +24,11 @@ Works with HTC VIVE and Oculus touch in a WebVR enabled browser.
     <a-entity hand-controls="left"></a-entity>
     <a-entity hand-controls="right"></a-entity>
 
+    <!-- Can also be controlled used with cursor -->
+    <a-camera>
+      <a-cursor></a-cursor>
+    </a-camera>
+
     <!-- Adds UI button widget -->
     <a-entity id="mybutton" ui-button></a-entity>
   </a-scene>
