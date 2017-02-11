@@ -4,11 +4,11 @@
     <script src="../build.js"></script>
   </head>
   <body>
-    <a-scene>
+    <a-scene retain-camera>
       <a-assets>
-        <a-mixin id="body"  geometry="primitive: cylinder; radius: 0.12; height: 0.09; segmentsHeight: 1" material="color: lightblue;"></a-mixin>
-        <a-mixin id="top" geometry="primitive: cylinder; radius: 0.1; height: 0.1; segmentsHeight: 1" material="color: orange;"></a-mixin>
-        <a-mixin id="pressed" material="color: red;"></a-mixin>
+        <a-mixin id="body"  geometry="primitive: cone; radiusTop: 0.12; radiusBottom: 0.15; height: 0.02; segmentsHeight: 1" material="color: #618EFF;"></a-mixin>
+        <a-mixin id="top" geometry="primitive: cylinder; radius: 0.1; height: 0.025; segmentsHeight: 1" material="color: #960960;"></a-mixin>
+        <a-mixin id="pressed" material="color: #FC2907;"></a-mixin>
       </a-assets>
       <a-sky color="#333333"></a-sky>
       <!-- Hands -->

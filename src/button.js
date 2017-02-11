@@ -111,8 +111,7 @@ module.exports = {
   },
 
   tick: function () {
-    return;
-    var topBB = new THREE.Box3().setFromObject(this.top);
+    var topBB = new THREE.Box3().setFromObject(this.top.getObject3D('mesh'));
     var self = this;
     this.controllers.forEach(function(controller) {
       var controllerBB = new THREE.Box3().setFromObject(controller.object3D);
