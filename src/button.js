@@ -37,7 +37,7 @@ module.exports = {
     // cursor controls
     el.addEventListener('mousedown', this.onButtonDown.bind(this));
     el.addEventListener('mouseup', this.onButtonUp.bind(this));
-    el.addEventListener('mouseleave', this.onButtonUp.bind(this));
+    el.addEventListener('mouseleave', this.onMouseLeave.bind(this));
     // motion controls
     el.addEventListener('hit', this.onHit);
     el.addEventListener('touchdown', this.onButtonDown.bind(this));
@@ -59,16 +59,31 @@ module.exports = {
     var el = this.el;
     top.setAttribute('position',{ x: 0, y: this.data.topY - this.data.topDepressY, z: 0});
     top.setAttribute('mixin', this.data.top + ' ' + this.data.pressed);
+    this.pressed = true;
     el.emit('buttondown');
   },
 
-  onButtonUp: function () {
+  resetButton: function() {
     var top = this.top;
-    var el = this.el;
     top.setAttribute('position',{ x: 0, y: this.data.topY, z: 0});
     top.setAttribute('mixin', this.data.top);
-    el.emit('buttonup');
-    el.emit('pressed');
+  },
+
+  onButtonUp: function (e) {
+    if (this.pressed) {
+      var el = this.el;
+      this.resetButton();
+      this.pressed = false;
+      el.emit('buttonup');
+      el.emit('pressed');
+    }
+  },
+
+  onMouseLeave: function() {
+    if (this.pressed) {
+      this.resetButton();
+      this.pressed = false;
+    }
   },
 
   // handles hand controller collisions
