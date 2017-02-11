@@ -3,26 +3,27 @@ module.exports = {
     size: { type: 'number', default: 0.1 },
     color: { type: 'color', default: '#ffff00' },
     pressedColor: { type: 'color', default: '#FC4007' },
-    topY: { type: 'number', default: 0.02 },
     topDepressY: { type: 'number', default: 0.01 },
-    base: { type: 'string', default: ''},
-    top: { type: 'string', default: ''}
+    base: { type: 'array', default: []},    /* specify mixin for button base */
+    top: { type: 'array', default: []},     /* specify mixin for button top */
+    pressed: {type: 'array', default: []}   /* add mixin for button when pressed */
   },
 
   multiple: true,
 
   init: function () {
+    var self = this;
     var top = document.createElement('a-entity');
-    top.setAttribute('mixin', this.data.top);
+    top.setAttribute('mixin', this.data.top.join(' '));
+    top.addEventListener('loaded', function() {
+      self.topOrigin = top.getAttribute('position');
+    });
+    this.top = top;
     this.el.appendChild(top);
 
-    var body = document.createElement('a-entity');
-    body.setAttribute('mixin', this.data.body);
-    this.el.appendChild(body);
-
-    // set button top proud of body.
-    top.setAttribute('position',{ x: 0, y: this.data.topY, z: 0});
-    this.top = top;
+    var base = document.createElement('a-entity');
+    base.setAttribute('mixin', this.data.base.join(' '));
+    this.el.appendChild(base);
 
     var controllers = document.querySelectorAll('a-entity[hand-controls]');
     this.controllers = Array.prototype.slice.call(controllers);
@@ -57,16 +58,16 @@ module.exports = {
   onButtonDown: function () {
     var top = this.top;
     var el = this.el;
-    top.setAttribute('position',{ x: 0, y: this.data.topY - this.data.topDepressY, z: 0});
-    top.setAttribute('mixin', this.data.top + ' ' + this.data.pressed);
+    top.setAttribute('position',{ x: 0, y: this.topOrigin.y - this.data.topDepressY, z: 0});
+    top.setAttribute('mixin', this.data.top.join(' ') + ' ' + this.data.pressed.join(' '));
     this.pressed = true;
     el.emit('buttondown');
   },
 
   resetButton: function() {
     var top = this.top;
-    top.setAttribute('position',{ x: 0, y: this.data.topY, z: 0});
-    top.setAttribute('mixin', this.data.top);
+    top.setAttribute('position',{ x: 0, y: this.topOrigin.y, z: 0});
+    top.setAttribute('mixin', this.data.top.join(' '));
   },
 
   onButtonUp: function (e) {

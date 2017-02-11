@@ -6,11 +6,14 @@
   <body>
     <a-scene retain-camera>
       <a-assets>
-        <a-mixin id="round-body" geometry="primitive: cone; radiusTop: 0.12; radiusBottom: 0.15; height: 0.02; segmentsHeight: 1" material="color: #618EFF;"></a-mixin>
-        <a-mixin id="square-body" geometry="primitive: box; width: 0.24; height: 0.02; depth: 0.24" material="color: #618EFF"></a-mixin>
-        <a-mixin id="round-top" geometry="primitive: cylinder; radius: 0.1; height: 0.025; segmentsHeight: 1" material="color: #960960;"></a-mixin>
-        <a-mixin id="square-top" geometry="primitive: box; width: 0.2; height: 0.025; depth: 0.2;" material="color: #960960;"></a-mixin>
-        <a-mixin id="pressed" material="color: #FC2907;"></a-mixin>
+        <a-mixin id="beveled-round" geometry="primitive: cone; radiusTop: 0.12; radiusBottom: 0.15; height: 0.02; segmentsHeight: 1"></a-mixin>
+        <a-mixin id="round" geometry="primitive: cylinder; radius: 0.1; height: 0.025; segmentsHeight: 1"></a-mixin>
+        <a-mixin id="beveled-square" geometry="primitive: cone; radiusTop: 0.15; radiusBottom: 0.19; height: 0.02; segmentsRadial: 4; segmentsHeight: 1" rotation="0 45 0"></a-mixin>
+        <a-mixin id="square" geometry="primitive: box; width: 0.18; height: 0.025; depth: 0.18;"></a-mixin>
+        <a-mixin id="offset-proud" position="0 0.012 0"></a-mixin>
+        <a-mixin id="steel" material="color: #618EFF;"></a-mixin>
+        <a-mixin id="darkred" material="color: #960960;"></a-mixin>
+        <a-mixin id="orange" material="color: #FC2907;"></a-mixin>
       </a-assets>
       <a-sky color="#333333"></a-sky>
       <!-- Hands -->
@@ -26,9 +29,9 @@
         </a-entity>
 
         <!-- Button -->
-        <a-entity id="button" ui-button="body: round-body; top: round-top; pressed: pressed" position="-0.35 0.1 -0.3" rotation="45 0 0"></a-entity>
+        <a-entity id="button" ui-button="base: beveled-round, steel; top: round, darkred, offset-proud; pressed: orange" position="-0.35 0.1 -0.3" rotation="45 0 0"></a-entity>
 
-        <a-entity id="button" ui-button="body: square-body; top: square-top; pressed: pressed" position="-0.7 0.1 -0.3" rotation="45 0 0"></a-entity>
+        <a-entity id="button" ui-button="base: beveled-square, steel; top: square, darkred, offset-proud; pressed: orange" position="-0.7 0.1 -0.3" rotation="45 0 0"></a-entity>
 
         <!-- Rotary Knob -->
         <a-entity id="rotaryKnob" ui-rotary position="0 0.1 -0.3" rotation="45 0 0"></a-entity>
