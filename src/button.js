@@ -4,21 +4,25 @@ module.exports = {
     color: { type: 'color', default: '#ffff00' },
     pressedColor: { type: 'color', default: '#FC4007' },
     topY: { type: 'number', default: 0.02 },
-    topDepressY: { type: 'number', default: 0.01 }
+    topDepressY: { type: 'number', default: 0.01 },
+    base: { type: 'string', default: ''},
+    top: { type: 'string', default: ''}
   },
 
   multiple: true,
 
   init: function () {
-    var topMaterial = new THREE.MeshLambertMaterial({color: this.data.color });
-    var top = new THREE.Mesh(new THREE.CylinderGeometry( 0.1, 0.1, 0.02, 20 ), topMaterial);
-    var bodyMaterial = new THREE.MeshNormalMaterial();
-    var body = new THREE.Mesh(new THREE.CylinderGeometry( 0.12, 0.15, 0.02, 20 ), bodyMaterial);
+    var top = document.createElement('a-entity');
+    top.setAttribute('mixin', this.data.top);
+    this.el.appendChild(top);
 
-    top.position.y = this.data.topY;
+    var body = document.createElement('a-entity');
+    body.setAttribute('mixin', this.data.body);
+    this.el.appendChild(body);
+
+    // set button top proud of body.
+    top.setAttribute('position',{ x: 0, y: this.data.topY, z: 0});
     this.top = top;
-    body.add(top);
-    this.el.setObject3D('mesh', body);
 
     var controllers = document.querySelectorAll('a-entity[hand-controls]');
     this.controllers = Array.prototype.slice.call(controllers);
@@ -53,16 +57,16 @@ module.exports = {
   onButtonDown: function () {
     var top = this.top;
     var el = this.el;
-    top.position.y = this.data.topY - this.data.topDepressY;
-    top.material.color.set(this.data.pressedColor);
+    top.setAttribute('position',{ x: 0, y: this.data.topY - this.data.topDepressY, z: 0});
+    top.setAttribute('mixin', this.data.top + ' ' + this.data.pressed);
     el.emit('buttondown');
   },
 
   onButtonUp: function () {
     var top = this.top;
     var el = this.el;
-    top.position.y = this.data.topY;
-    top.material.color.set(this.data.color);
+    top.setAttribute('position',{ x: 0, y: this.data.topY, z: 0});
+    top.setAttribute('mixin', this.data.top);
     el.emit('buttonup');
     el.emit('pressed');
   },
@@ -92,6 +96,7 @@ module.exports = {
   },
 
   tick: function () {
+    return;
     var topBB = new THREE.Box3().setFromObject(this.top);
     var self = this;
     this.controllers.forEach(function(controller) {
