@@ -4,9 +4,16 @@
     <script src="../build.js"></script>
   </head>
   <body>
-    <a-scene>
+    <a-scene retain-camera debug>
+      <a-assets>
+        <a-mixin id="beveled-square" geometry="primitive: cone; radiusTop: 0.15; radiusBottom: 0.19; height: 0.02; segmentsRadial: 4; segmentsHeight: 1" rotation="0 45 0"></a-mixin>
+        <a-mixin id="square" geometry="primitive: box; width: 0.18; height: 0.025; depth: 0.18;" position="0 0.02 0"></a-mixin>
+        <a-mixin id="blue" material="color: #1E2768;"></a-mixin>
+        <a-mixin id="darkgreen" material="color: #22FF90;"></a-mixin>
+        <a-mixin id="yellow" material="color: #FFF88E;"></a-mixin>
+        <a-mixin id="offset" position="0 0.01 0"></a-mixin>
+      </a-assets>
       <a-sky color="#333333"></a-sky>
-
       <!-- Hands -->
       <a-entity hand-controls="left"></a-entity>
       <a-entity hand-controls="right"></a-entity>
@@ -19,8 +26,11 @@
           material="color: orange">
         </a-entity>
 
-        <!-- Button -->
+        <!-- Button, uses default styles -->
         <a-entity id="button" ui-button position="-0.35 0.1 -0.3" rotation="45 0 0"></a-entity>
+
+        <!-- Button, custom styles -->
+        <a-entity id="button" ui-button="base: beveled-square, blue; top: square, darkgreen; pressed: yellow, offset" position="-0.7 0.1 -0.3" rotation="45 0 0"></a-entity>
 
         <!-- Rotary Knob -->
         <a-entity id="rotaryKnob" ui-rotary position="0 0.1 -0.3" rotation="45 0 0"></a-entity>
@@ -30,8 +40,12 @@
 
         <!-- Slider -->
         <a-entity id="valueSlider" ui-slider="min: 1; max: 10; value: 5" position="0 0 0"></a-entity>
-
       </a-entity>
+
+
+      <a-camera>
+        <a-cursor></a-cursor>
+      </a-camera>
     </a-scene>
 
     <script>

@@ -1,24 +1,52 @@
 module.exports = {
   schema: {
     size: { type: 'number', default: 0.1 },
-    color: { type: 'color', default: '#ffff00' },
-    pressedColor: { type: 'color', default: '#FC4007' },
+    color: { type: 'color', default: '#960960' },
+    pressedColor: { type: 'color', default: '#FC2907' },
+    baseColor: {type: 'color', default: '#618EFF'},
     topY: { type: 'number', default: 0.02 },
-    topDepressY: { type: 'number', default: 0.01 }
+    pressedY: { type: 'number', default: 0.012 },
+    base: { type: 'array' },    /* specify mixin for button base */
+    top: { type: 'array' },     /* specify mixin for button top */
+    pressed: {type: 'array' }   /* add mixin for button when pressed */
   },
 
   multiple: true,
 
   init: function () {
-    var topMaterial = new THREE.MeshLambertMaterial({color: this.data.color });
-    var top = new THREE.Mesh(new THREE.CylinderGeometry( 0.1, 0.1, 0.02, 20 ), topMaterial);
-    var bodyMaterial = new THREE.MeshNormalMaterial();
-    var body = new THREE.Mesh(new THREE.CylinderGeometry( 0.12, 0.15, 0.02, 20 ), bodyMaterial);
-
-    top.position.y = this.data.topY;
+    var self = this;
+    var top = document.createElement('a-entity');
+    if (this.data.top.length > 0) {
+      top.setAttribute('mixin', this.data.top.join(' '));
+    } else {
+      // default style
+      top.setAttribute('geometry', {
+        primitive: 'cylinder',
+        radius: 0.1,
+        height: 0.025,
+        segmentsHeight: 1
+      });
+      top.setAttribute('position', { x: 0, y: this.data.topY, z: 0 });
+      top.setAttribute('material', { color: this.data.color });
+    }
     this.top = top;
-    body.add(top);
-    this.el.setObject3D('mesh', body);
+    this.el.appendChild(top);
+
+    var base = document.createElement('a-entity');
+    if (this.data.base.length > 0) {
+      base.setAttribute('mixin', this.data.base.join(' '));
+    } else {
+      // default style
+      base.setAttribute('geometry', {
+        primitive: 'cone',
+        radiusTop: 0.12,
+        radiusBottom: 0.15,
+        height: 0.02,
+        segmentsHeight: 1
+      });
+      base.setAttribute('material', { color: this.data.baseColor });
+    }
+    this.el.appendChild(base);
 
     var controllers = document.querySelectorAll('a-entity[hand-controls]');
     this.controllers = Array.prototype.slice.call(controllers);
@@ -33,7 +61,7 @@ module.exports = {
     // cursor controls
     el.addEventListener('mousedown', this.onButtonDown.bind(this));
     el.addEventListener('mouseup', this.onButtonUp.bind(this));
-    el.addEventListener('mouseleave', this.onButtonUp.bind(this));
+    el.addEventListener('mouseleave', this.onMouseLeave.bind(this));
     // motion controls
     el.addEventListener('hit', this.onHit);
     el.addEventListener('touchdown', this.onButtonDown.bind(this));
@@ -53,18 +81,44 @@ module.exports = {
   onButtonDown: function () {
     var top = this.top;
     var el = this.el;
-    top.position.y = this.data.topY - this.data.topDepressY;
-    top.material.color.set(this.data.pressedColor);
+    if (this.data.top.length > 0 && this.data.pressed.length > 0) {
+      var mixin = this.data.top.join(' ') + ' ' + this.data.pressed.join(' ');
+      top.setAttribute('mixin', mixin);
+    } else {
+      top.setAttribute('position',{ x: 0, y: this.data.pressedY, z: 0 });
+      top.setAttribute('material', { color: this.data.pressedColor });
+    }
+    this.pressed = true;
     el.emit('buttondown');
   },
 
-  onButtonUp: function () {
+  resetButton: function() {
     var top = this.top;
-    var el = this.el;
-    top.position.y = this.data.topY;
-    top.material.color.set(this.data.color);
-    el.emit('buttonup');
-    el.emit('pressed');
+    // top.setAttribute('position',{ x: 0, y: this.topOrigin.y, z: 0});
+    if (this.data.top.length > 0) {
+      var mixin = this.data.top.join(' ');
+      top.setAttribute('mixin', mixin);
+    } else {
+      top.setAttribute('position', { x: 0, y: this.data.topY, z: 0 });
+      top.setAttribute('material', { color: this.data.color });
+    }
+  },
+
+  onButtonUp: function (e) {
+    if (this.pressed) {
+      var el = this.el;
+      this.resetButton();
+      this.pressed = false;
+      el.emit('buttonup');
+      el.emit('pressed');
+    }
+  },
+
+  onMouseLeave: function() {
+    if (this.pressed) {
+      this.resetButton();
+      this.pressed = false;
+    }
   },
 
   // handles hand controller collisions
@@ -92,8 +146,13 @@ module.exports = {
   },
 
   tick: function () {
-    var topBB = new THREE.Box3().setFromObject(this.top);
     var self = this;
+    var mesh = this.top.getObject3D('mesh');
+    if (!mesh) {
+      console.log('no mesh!');
+      return
+    }
+    var topBB = new THREE.Box3().setFromObject(mesh);
     this.controllers.forEach(function(controller) {
       var controllerBB = new THREE.Box3().setFromObject(controller.object3D);
       var collision = topBB.intersectsBox(controllerBB);
