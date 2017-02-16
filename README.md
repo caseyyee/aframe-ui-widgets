@@ -67,11 +67,16 @@ Using mixins, you can define a UI component styles.
 <a-entity ui-button></a-entity>
 ````
 ##### Properties
-| Property      | Description
-| ------------- | -------------
+| Property      | Description   | Default Value
+| ------------- | ------------- | -------------
 | base | mixins to use for button base.
 | top | mixins to use for button top.
 | pressed | mixins to use for when button is pressed (added to top).
+| color | default button color | #960960
+| pressedColor | default button-pressed color | #FC2907
+| baseColor | default button-base color | #618EFF
+| topY | default button top height | 0.02
+| pressedY | default button pressed height | 0.012
 
 ##### Events
 | Event         | Description
