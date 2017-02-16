@@ -39,9 +39,25 @@ Works with HTC VIVE and Oculus touch in a WebVR enabled browser.
   });
   </script>
 </body>
-
-
 ````
+
+### Skinnable with custom styles
+
+Using mixins, you can define a UI component styles.
+
+````html
+<a-assets>
+  <a-mixin id="beveled-square" geometry="primitive: cone; radiusTop: 0.15; radiusBottom: 0.19; height: 0.02; segmentsRadial: 4; segmentsHeight: 1" rotation="0 45 0"></a-mixin>
+  <a-mixin id="square" geometry="primitive: box; width: 0.18; height: 0.025; depth: 0.18;" position="0 0.02 0"></a-mixin>
+  <a-mixin id="blue" material="color: #1E2768;"></a-mixin>
+  <a-mixin id="darkgreen" material="color: #22FF90;"></a-mixin>
+  <a-mixin id="yellow" material="color: #FFF88E;"></a-mixin>
+  <a-mixin id="offset" position="0 0.01 0"></a-mixin>
+</a-assets>
+
+<a-entity id="button" ui-button="base: beveled-square, blue; top: square, darkgreen; pressed: yellow, offset"></a-entity>
+````
+
 
 ### UI Components
 
@@ -56,21 +72,6 @@ Works with HTC VIVE and Oculus touch in a WebVR enabled browser.
 | base | mixins to use for button base.
 | top | mixins to use for button top.
 | pressed | mixins to use for when button is pressed (added to top).
-
-##### Skinning buttons with custom styles
-
-````html
-<a-assets>
-  <a-mixin id="beveled-square" geometry="primitive: cone; radiusTop: 0.15; radiusBottom: 0.19; height: 0.02; segmentsRadial: 4; segmentsHeight: 1" rotation="0 45 0"></a-mixin>
-  <a-mixin id="square" geometry="primitive: box; width: 0.18; height: 0.025; depth: 0.18;" position="0 0.02 0"></a-mixin>
-  <a-mixin id="blue" material="color: #1E2768;"></a-mixin>
-  <a-mixin id="darkgreen" material="color: #22FF90;"></a-mixin>
-  <a-mixin id="yellow" material="color: #FFF88E;"></a-mixin>
-  <a-mixin id="offset" position="0 0.01 0"></a-mixin>
-</a-assets>
-
-<a-entity id="button" ui-button="base: beveled-square, blue; top: square, darkgreen; pressed: yellow, offset"></a-entity>
-````
 
 ##### Events
 | Event         | Description
