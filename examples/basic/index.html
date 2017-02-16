@@ -13,7 +13,7 @@
         <a-mixin id="yellow" material="color: #FFF88E;"></a-mixin>
         <a-mixin id="offset" position="0 0.01 0"></a-mixin>
       </a-assets>
-      <a-sky color="#333333"></a-sky>
+      <a-sky color="#222222"></a-sky>
       <!-- Hands -->
       <a-entity hand-controls="left"></a-entity>
       <a-entity hand-controls="right"></a-entity>
@@ -40,6 +40,14 @@
 
         <!-- Slider -->
         <a-entity id="valueSlider" ui-slider="min: 1; max: 10; value: 5" position="0 0 0"></a-entity>
+
+        <a-entity position="0.6 0.2 0.5" rotation="0 -90 0">
+          <!-- Text Input -->
+          <a-entity id="textInput" ui-text-input position="0 0.2 0"></a-entity>
+
+          <!-- Keyboard -->
+          <a-entity ui-keyboard='target: #textInput' position="0 0 0" rotation="45 0 0"></a-entity>
+        </a-entity>
       </a-entity>
 
 

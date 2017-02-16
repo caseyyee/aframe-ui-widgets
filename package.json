@@ -50,5 +50,8 @@
       "examples/build.js",
       "dist/**"
     ]
+  },
+  "dependencies": {
+    "aframe-dev-components": "git://github.com/caseyyee/aframe-dev-components.git"
   }
 }
