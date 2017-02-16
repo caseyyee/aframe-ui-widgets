@@ -1,12 +1,14 @@
 module.exports = {
   schema: {
     size: { type: 'number', default: 0.1 },
-    color: { type: 'color', default: '#ffff00' },
-    pressedColor: { type: 'color', default: '#FC4007' },
-    topDepressY: { type: 'number', default: 0.01 },
-    base: { type: 'array', default: []},    /* specify mixin for button base */
-    top: { type: 'array', default: []},     /* specify mixin for button top */
-    pressed: {type: 'array', default: []}   /* add mixin for button when pressed */
+    color: { type: 'color', default: '#960960' },
+    pressedColor: { type: 'color', default: '#FC2907' },
+    baseColor: {type: 'color', default: '#618EFF'},
+    topY: { type: 'number', default: 0.02 },
+    pressedY: { type: 'number', default: 0.012 },
+    base: { type: 'array' },    /* specify mixin for button base */
+    top: { type: 'array' },     /* specify mixin for button top */
+    pressed: {type: 'array' }   /* add mixin for button when pressed */
   },
 
   multiple: true,
@@ -14,15 +16,36 @@ module.exports = {
   init: function () {
     var self = this;
     var top = document.createElement('a-entity');
-    top.setAttribute('mixin', this.data.top.join(' '));
-    top.addEventListener('loaded', function() {
-      self.topOrigin = top.getAttribute('position');
-    });
+    if (this.data.top.length > 0) {
+      top.setAttribute('mixin', this.data.top.join(' '));
+    } else {
+      // default style
+      top.setAttribute('geometry', {
+        primitive: 'cylinder',
+        radius: 0.1,
+        height: 0.025,
+        segmentsHeight: 1
+      });
+      top.setAttribute('position', { x: 0, y: this.data.topY, z: 0 });
+      top.setAttribute('material', { color: this.data.color });
+    }
     this.top = top;
     this.el.appendChild(top);
 
     var base = document.createElement('a-entity');
-    base.setAttribute('mixin', this.data.base.join(' '));
+    if (this.data.base.length > 0) {
+      base.setAttribute('mixin', this.data.base.join(' '));
+    } else {
+      // default style
+      base.setAttribute('geometry', {
+        primitive: 'cone',
+        radiusTop: 0.12,
+        radiusBottom: 0.15,
+        height: 0.02,
+        segmentsHeight: 1
+      });
+      base.setAttribute('material', { color: this.data.baseColor });
+    }
     this.el.appendChild(base);
 
     var controllers = document.querySelectorAll('a-entity[hand-controls]');
@@ -58,16 +81,27 @@ module.exports = {
   onButtonDown: function () {
     var top = this.top;
     var el = this.el;
-    top.setAttribute('position',{ x: 0, y: this.topOrigin.y - this.data.topDepressY, z: 0});
-    top.setAttribute('mixin', this.data.top.join(' ') + ' ' + this.data.pressed.join(' '));
+    if (this.data.top.length > 0 && this.data.pressed.length > 0) {
+      var mixin = this.data.top.join(' ') + ' ' + this.data.pressed.join(' ');
+      top.setAttribute('mixin', mixin);
+    } else {
+      top.setAttribute('position',{ x: 0, y: this.data.pressedY, z: 0 });
+      top.setAttribute('material', { color: this.data.pressedColor });
+    }
     this.pressed = true;
     el.emit('buttondown');
   },
 
   resetButton: function() {
     var top = this.top;
-    top.setAttribute('position',{ x: 0, y: this.topOrigin.y, z: 0});
-    top.setAttribute('mixin', this.data.top.join(' '));
+    // top.setAttribute('position',{ x: 0, y: this.topOrigin.y, z: 0});
+    if (this.data.top.length > 0) {
+      var mixin = this.data.top.join(' ');
+      top.setAttribute('mixin', mixin);
+    } else {
+      top.setAttribute('position', { x: 0, y: this.data.topY, z: 0 });
+      top.setAttribute('material', { color: this.data.color });
+    }
   },
 
   onButtonUp: function (e) {
@@ -112,8 +146,13 @@ module.exports = {
   },
 
   tick: function () {
-    var topBB = new THREE.Box3().setFromObject(this.top.getObject3D('mesh'));
     var self = this;
+    var mesh = this.top.getObject3D('mesh');
+    if (!mesh) {
+      console.log('no mesh!');
+      return
+    }
+    var topBB = new THREE.Box3().setFromObject(mesh);
     this.controllers.forEach(function(controller) {
       var controllerBB = new THREE.Box3().setFromObject(controller.object3D);
       var collision = topBB.intersectsBox(controllerBB);
