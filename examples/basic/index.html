@@ -1,10 +1,13 @@
 <html>
   <head>
     <title>A-Frame UI Widgets</title>
+    <script src="https://aframe.io/releases/0.5.0/aframe.min.js" ></script>
+    <script src="https://rawgit.com/mayognaise/aframe-mouse-cursor-component/master/dist/aframe-mouse-cursor-component.min.js"></script>
     <script src="../build.js"></script>
+
   </head>
   <body>
-    <a-scene retain-camera debug>
+    <a-scene retain-camera debug stats="false">
       <a-assets>
         <a-mixin id="beveled-square" geometry="primitive: cone; radiusTop: 0.15; radiusBottom: 0.19; height: 0.02; segmentsRadial: 4; segmentsHeight: 1" rotation="0 45 0"></a-mixin>
         <a-mixin id="square" geometry="primitive: box; width: 0.18; height: 0.025; depth: 0.18;" position="0 0.02 0"></a-mixin>
@@ -26,11 +29,11 @@
           material="color: orange">
         </a-entity>
 
-        <!-- Button, uses default styles -->
-        <a-entity id="button" ui-button position="-0.35 0.1 -0.3" rotation="45 0 0"></a-entity>
-
         <!-- Button, custom styles -->
-        <a-entity id="button" ui-button="base: beveled-square, blue; top: square, darkgreen; pressed: yellow, offset" position="-0.7 0.1 -0.3" rotation="45 0 0"></a-entity>
+        <a-entity id="buttonCustom" ui-button="value: 0; base: beveled-square, blue; top: square, darkgreen; pressed: yellow, offset" position="-0.7 0.1 -0.3" rotation="45 0 0"></a-entity>
+
+        <!-- Button, uses default styles -->
+        <a-entity id="buttonStd" ui-button position="-0.35 0.1 -0.3" rotation="45 0 0"></a-entity>
 
         <!-- Rotary Knob -->
         <a-entity id="rotaryKnob" ui-rotary position="0 0.1 -0.3" rotation="45 0 0"></a-entity>
@@ -43,7 +46,7 @@
       </a-entity>
 
 
-      <a-camera>
+      <a-camera mouse-cursor wasd-controls>
         <a-cursor></a-cursor>
       </a-camera>
     </a-scene>
@@ -52,9 +55,20 @@
     // Object which we're going to modify
     var targetEntity = document.querySelector('#target');
 
-    // picks random color
-    var button = document.querySelector('#button');
-    button.addEventListener('pressed', function() {
+    // picks random color buttonCustom
+    var buttonCustom = document.querySelector('#buttonCustom');
+    buttonCustom.addEventListener('pressed', function(e) {
+      var scene = document.querySelector('a-scene');
+      if ( scene.getAttribute('stats') ) {
+        scene.setAttribute('stats', 'false');
+      } else {
+        scene.setAttribute('stats', 'true');
+      }
+    });
+
+    // picks random color buttonCustom
+    var buttonStd = document.querySelector('#buttonStd');
+    buttonStd.addEventListener('pressed', function() {
       var randomHexColor = Math.floor(Math.random() * 0xffffff).toString(16);
       targetEntity.setAttribute('material', {
         color: '#' + randomHexColor

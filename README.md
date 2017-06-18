@@ -4,7 +4,8 @@
 
 ![A-Frame UI Widgets](https://raw.githubusercontent.com/caseyyee/aframe-ui-widgets/master/img/preview.gif)
 
-Works with HTC VIVE and Oculus touch in a WebVR enabled browser.
+Works with HTC VIVE and Oculus touch in a WebVR enabled browser and desktop with `aframe-mouse-cursor-component`.
+
 
 
 ### Basic usage
