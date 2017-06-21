@@ -1,4 +1,4 @@
-window.AFRAME = require('aframe');
+// window.AFRAME = require('aframe');
 
 AFRAME.registerComponent('ui-button', require('./src/button'));
 

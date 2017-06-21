@@ -1,3 +1,3 @@
-require('aframe');
-require('aframe-dev-components');
+// require('aframe');
+// require('aframe-dev-components');
 require('../index.js');
