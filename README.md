@@ -13,10 +13,10 @@ Works with HTC VIVE and Oculus touch in a WebVR enabled browser and desktop with
 ````html
 <head>
   <title>My A-Frame Scene</title>
-  <script src="https://aframe.io/releases/0.4.0/aframe.min.js"></script>
+  <script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
 
   <!-- Include component script into your project along with A-Frame. -->
-  <script src="https://rawgit.com/caseyyee/aframe-ui-widgets/master/dist/ui-widgets.min.js"></script>
+  <script src="https://rawgit.com/caseyyee/aframe-ui-widgets/master/dist/aframe-ui-widgets.min.js"></script>
 </head>
 
 <body>
