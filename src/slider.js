@@ -102,5 +102,11 @@ module.exports = {
         this.value = value;
       }
     }
+  },
+
+  update: function(old) {
+    if(this.data.value !== old.value) {
+      this.setValue(this.data.value);
+    }
   }
 };
