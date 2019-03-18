@@ -97,5 +97,11 @@ module.exports = {
         this.setValue(0);
       }
     }
+  },
+
+  update: function(old) {
+    if(this.data.value !== old.value) {
+      this.setValue(this.data.value);
+    }
   }
 };
